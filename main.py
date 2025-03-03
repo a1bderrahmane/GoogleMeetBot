@@ -1,13 +1,11 @@
 from authentication import GoogleAuthenticator
 from meeting import GoogleMeetBot
 from config import MEET_LINK
-import os
 import sys
+
 sys.tracebacklimit = 0
 
 def main():
-    os.environ['TMP'] = "D:\Temp"
-    os.environ['TEMP'] = "D:\Temp"
     auth = GoogleAuthenticator()
     driver = auth.login()
     if(driver==None):

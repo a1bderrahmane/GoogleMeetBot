@@ -73,7 +73,7 @@ The project follows a modular design:
   - Playing audio via the Audio class.
 
 ## UML Diagram
-![UML Diagram](UML.png)
+![UML Diagram](UML.svg)
 
 ## Behavior of the App
 
