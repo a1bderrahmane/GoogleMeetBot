@@ -1,0 +1,28 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# Logs
+*.log
+logs/
+
+.DS_Store
+Thumbs.db
+
+chromedriver.exe
+chromedriver.log
+
+pip-log.txt
+pip-delete-this-directory.txt
+
+*.ffmpeg_temp
