@@ -1,18 +1,24 @@
 import time
 from config import AUDIO_DURATION, AUDIO_FILE
 import subprocess
-
+from pydub import AudioSegment
 
 class Audio:
     def __init__(self, driver):
         self.driver = driver
         self.audio_file_path = AUDIO_FILE
         self.duration = AUDIO_DURATION
+    def get_audio_duration(self):
+        audio = AudioSegment.from_file(AUDIO_FILE)
+        return len(audio) / 1000  
+    
     def play_audio(self):
         process = subprocess.Popen(["ffplay", "-autoexit", "-nodisp", self.audio_file_path])  # command for windows 
+        audio_duration=self.get_audio_duration()
+        if (self.duration>audio_duration):
+            self.duration=audio_duration
         time.sleep(self.duration)
-        print("im' here")
-        # Terminate the process if it's still running
-        process.terminate()
+        process.terminate() # Terminate the process if it's still running
         print(f"Playback stopped after {self.duration} seconds.")
         return 
+    

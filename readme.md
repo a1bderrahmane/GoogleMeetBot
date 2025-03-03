@@ -53,18 +53,14 @@ EMAIL_PASSWORD=your_password
 MEET_LINK=https://meet.google.com/your-meet-id
 AUDIO_FILE=path_to_your_audio_file
 AUDIO_DURATION=duration_in_seconds
-JS_FILE=path_to_your_javascript_file
 ```
 
 FFmpeg Installation: Ensure that FFmpeg is installed and its bin folder is added to your system's PATH:
 
-Windows: Add the directory containing ffplay.exe to the PATH via System Properties > Environment Variables.
-macOS/Linux: You can typically install FFmpeg using a package manager (e.g., `brew install ffmpeg` on macOS).
-
 ## Architecture
 The project follows a modular design:
 
-- **Audio Class:** Handles audio playback using FFmpeg (ffplay) and integrates with the Selenium driver to potentially inject JavaScript.
+- **Audio Class:** Handles audio playback using FFmpeg (ffplay) ,it executes the appropriate shell command to start the audio. The class also ensures efficient process management by controlling playback duration and terminating the process when needed.
 - **GoogleAuthenticator Class:** Manages login operations using Selenium, loading credentials from environment variables, and setting Chrome options for a smooth automated login experience.
 - **GoogleMeetBot Class:** Automates joining a Google Meet session by:
   - Navigating to the provided meeting link.
