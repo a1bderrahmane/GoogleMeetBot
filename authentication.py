@@ -3,17 +3,13 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
-import os
-import time
-from dotenv import load_dotenv
 from selenium import webdriver
-
-load_dotenv()
+from config import EMAIL, PASSWORD
 
 class GoogleAuthenticator:
     def __init__(self):
-        self.email = os.getenv("EMAIL_ID")
-        self.password = os.getenv("EMAIL_PASSWORD")
+        self.email = EMAIL
+        self.password = PASSWORD
         options = Options()
         options.add_argument("--disable-gpu")
         options.add_argument("--start-maximized")
@@ -22,7 +18,7 @@ class GoogleAuthenticator:
             "profile.default_content_setting_values.media_stream_camera": 1,
             "profile.default_content_setting_values.geolocation": 1
         })
-        # ✅ Disable pop-ups
+        #  Disable pop-ups
         options.add_argument("--use-fake-ui-for-media-stream")  
         options.add_argument("--disable-features=WebRtcHideLocalIpsWithMdns")
         options.add_argument("--autoplay-policy=no-user-gesture-required")
@@ -30,61 +26,169 @@ class GoogleAuthenticator:
 
         self.driver = webdriver.Chrome(options=options)
 
-    def login(self):
+    
+    def open_login_page(self):
+        """Ouvre la page de connexion de Google."""
         self.driver.get("https://accounts.google.com/")
 
-        # Enter email and click next
+    def enter_email(self):
+        """Saisit l'email et passe à l'étape suivante.
+        
+        Retourne True en cas de succès, False sinon.
+        """
         try:
-            email_input = WebDriverWait(self.driver, 10).until(
+            email_input = WebDriverWait(self.driver, 20).until(
                 EC.presence_of_element_located((By.ID, "identifierId"))
             )
             email_input.send_keys(self.email)
             self.driver.find_element(By.ID, "identifierNext").click()
+            return True
         except TimeoutException:
             print("\033[1;31mErreur: Email input not found\033[0m")
-            self.driver.quit()
-            return
+            return False
 
-        # Wait for the password field or email error message
+    def wait_for_password_field(self):
+        """Attend l'apparition du champ de saisie du mot de passe.
+        
+        Retourne l'élément si trouvé, sinon None.
+        """
         try:
-            # Wait until the password field is present
-            password_input = WebDriverWait(self.driver, 10).until(
+            password_input = WebDriverWait(self.driver, 20).until(
                 EC.presence_of_element_located((By.NAME, "Passwd"))
             )
+            return password_input
         except TimeoutException:
-            # Try to capture an error message indicating the email is wrong
-            try:
-                error_element = self.driver.find_element(By.XPATH, "//div[@jsname='B34EJ']")
-                print("\033[1;31mErreur: Email incorrect\033[0m")
-            except NoSuchElementException:
-                print("\033[1;31mErreur: Timeout waiting for password field\033[0m")
-            self.driver.quit()
-            return
+            return None
 
-        # Enter password and click next
+    def check_email_error(self):
+        """Vérifie s'il y a un message d'erreur lié à l'email incorrect.
+        
+        Retourne True si une erreur est détectée, sinon False.
+        """
+        try:
+            self.driver.find_element(By.XPATH, "//div[@jsname='B34EJ']")
+            print("\033[1;31mErreur: Email incorrect\033[0m")
+            return True
+        except NoSuchElementException:
+            return False
+
+    def enter_password(self, password_input):
+        """Saisit le mot de passe et soumet le formulaire.
+        
+        Retourne True en cas de succès, False sinon.
+        """
         try:
             password_input.send_keys(self.password)
             self.driver.find_element(By.ID, "passwordNext").click()
+            return True
         except Exception as e:
-            print(f"\033[1;31mErreur during password input: {e}\033[0m")
-            self.driver.quit()
-            return
+            print(f"\033[1;31mErreur during password input: \033[0m")
+            return False
 
-        # Wait for an element that indicates successful login or a password error message
+    def verify_login(self):
+        """Vérifie si la connexion a réussi en attendant la présence d'un élément caractéristique.
+        
+        Retourne True si la connexion est validée, False sinon.
+        """
         try:
-            # Replace the below locator with an element that is unique to the account page after login
-            WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.XPATH,"//div[@class='GiKO7c']"))
+            WebDriverWait(self.driver, 20).until(
+                EC.presence_of_element_located((By.XPATH, "//div[@class='GiKO7c']"))
             )
             print("Login successful!")
+            return True
         except TimeoutException:
             try:
-                # Check if there's a password error message displayed
-                error_element = self.driver.find_element(By.XPATH,"//div[@jsname='B34EJ']")
+                self.driver.find_element(By.XPATH, "//div[@jsname='B34EJ']")
                 print("\033[1;31mErreur: Mot de passe incorrect\033[0m")
             except NoSuchElementException:
                 print("\033[1;31mErreur: Login process timed out\033[0m")
+            return False
+
+    def login(self):
+        """Procède à l'ensemble du processus de connexion."""
+        self.open_login_page()
+        
+        if not self.enter_email():
+            self.driver.quit()
+            return
+        
+        password_input = self.wait_for_password_field()
+        if not password_input:
+            if self.check_email_error():
+                self.driver.quit()
+                return
+            else:
+                print("\033[1;31mErreur: Timeout waiting for password field\033[0m")
+                self.driver.quit()
+                return
+
+        if not self.enter_password(password_input):
+            self.driver.quit()
+            return
+
+        if not self.verify_login():
             self.driver.quit()
             return
 
         return self.driver
+    
+
+    # def login(self):
+    #     self.driver.get("https://accounts.google.com/")
+
+    #     # Enter email and click next
+    #     try:
+    #         email_input = WebDriverWait(self.driver, 20).until(
+    #             EC.presence_of_element_located((By.ID, "identifierId"))
+    #         )
+    #         email_input.send_keys(self.email)
+    #         self.driver.find_element(By.ID, "identifierNext").click()
+    #     except TimeoutException:
+    #         print("\033[1;31mErreur: Email input not found\033[0m")
+    #         self.driver.quit()
+    #         return
+
+    #     # Wait for the password field or email error message
+    #     try:
+    #         # Wait until the password field is present
+    #         password_input = WebDriverWait(self.driver, 20).until(
+    #             EC.presence_of_element_located((By.NAME, "Passwd"))
+    #         )
+    #     except TimeoutException:
+    #         # Try to capture an error message indicating the email is wrong
+    #         try:
+    #             error_element = self.driver.find_element(By.XPATH, "//div[@jsname='B34EJ']")
+    #             print("\033[1;31mErreur: Email incorrect\033[0m")
+    #         except NoSuchElementException:
+    #             print("\033[1;31mErreur: Timeout waiting for password field\033[0m")
+    #         self.driver.quit()
+    #         return
+
+    #     # Enter password and click next
+    #     try:
+    #         password_input.send_keys(self.password)
+    #         self.driver.find_element(By.ID, "passwordNext").click()
+    #     except Exception as e:
+    #         print(f"\033[1;31mErreur during password input: \033[0m")
+    #         self.driver.quit()
+    #         return
+
+    #     # Wait for an element that indicates successful login or a password error message
+    #     try:
+    #         # Replace the below locator with an element that is unique to the account page after login
+    #         WebDriverWait(self.driver, 20).until(
+    #             EC.presence_of_element_located((By.XPATH,"//div[@class='GiKO7c']"))
+    #         )
+    #         print("Login successful!")
+    #     except TimeoutException:
+    #         try:
+    #             # Check if there's a password error message displayed
+    #             error_element = self.driver.find_element(By.XPATH,"//div[@jsname='B34EJ']")
+    #             print("\033[1;31mErreur: Mot de passe incorrect\033[0m")
+    #         except NoSuchElementException:
+    #             print("\033[1;31mErreur: Login process timed out\033[0m")
+    #         self.driver.quit()
+    #         return
+
+    #     return self.driver
+
