@@ -1,0 +1,6 @@
+EMAIL_ID=mailExample@gmail.com
+EMAIL_PASSWORD=Password
+MEET_LINK=https://meet.google.com/meetingId
+AUDIO_DURATION=30
+AUDIO_FILE="music.mp3"
+JS_FILE="playAudio.js"
