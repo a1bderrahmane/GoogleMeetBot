@@ -91,18 +91,13 @@ class GoogleMeetBot:
             return
 
         self.play_audio()
-        # self.maintain_meeting()
 
-    # def leave_meeting(self):
-    #     """Quitte la réunion."""
-    #     self.driver.quit()
 
     def leave_meeting(self):
         """Tries to click the 'Quitter l'appel' button using multiple selectors."""
         try:
             print("\033[1;34mAttempting to leave the meeting...\033[0m")
 
-            # Define multiple ways to locate the 'Quitter l'appel' button
             button_selectors = [
                 (By.XPATH, "//button[contains(@class, 'VYBDae-Bz112c-LgbsSe') and contains(@aria-label, 'Quitter l')]"),  
                 (By.XPATH, "//button[.//i[contains(text(), 'call_end')]]"),  
@@ -115,7 +110,7 @@ class GoogleMeetBot:
                     )
                     leave_button.click()
                     print("\033[1;32mSuccessfully clicked 'Quitter l'appel' (End Call) button!\033[0m")
-                    print(f"Selector {i} used.")
+                    self.driver.quit()
                     return True
                 except:
                     continue  # Try the next selector if the current one fails
