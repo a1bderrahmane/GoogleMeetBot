@@ -77,14 +77,10 @@ The project follows a modular design:
 - **Authentication:** The app uses the GoogleAuthenticator class to open a Chrome session and log into your Google account using credentials provided in the .env file.
 - **Meeting Joining:** Once authenticated, the GoogleMeetBot class navigates to the specified Google Meet link and simulates a user clicking the join button. It also checks if the meeting has successfully started by detecting a meeting identifier on the page.
 - **Audio Playback:** After joining the meeting, the Audio class is invoked to play an audio file using FFmpeg. The process is monitored and stopped after a duration specified in the configuration.
-- **Continuous Session:** The bot stays in the meeting indefinitely, with periodic sleeps to keep the session active. You can interrupt the session manually (e.g., CTRL+C) to exit.
 
 ## Running the Project
-After setting up the environment and configuring the variables, run the project with:
+After setting up the environment and configuring the variables, ensure that you create a virtual audio line using VAC (Virtual Audio Cable) to route the audio properly. Once the virtual line is set up, run the project with:
 ```bash
 python main.py
 ```
 The script will launch Chrome, perform the login, join the Google Meet session, and play the audio file as configured.
-
-## License
-This project is open source and available under the MIT License.
