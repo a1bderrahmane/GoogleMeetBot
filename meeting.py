@@ -93,7 +93,38 @@ class GoogleMeetBot:
         self.play_audio()
         # self.maintain_meeting()
 
+    # def leave_meeting(self):
+    #     """Quitte la réunion."""
+    #     self.driver.quit()
+
     def leave_meeting(self):
-        """Quitte la réunion."""
-        self.driver.quit()
+        """Tries to click the 'Quitter l'appel' button using multiple selectors."""
+        try:
+            print("\033[1;34mAttempting to leave the meeting...\033[0m")
+
+            # Define multiple ways to locate the 'Quitter l'appel' button
+            button_selectors = [
+                (By.XPATH, "//button[contains(@class, 'VYBDae-Bz112c-LgbsSe') and contains(@aria-label, 'Quitter l')]"),  
+                (By.XPATH, "//button[.//i[contains(text(), 'call_end')]]"),  
+                (By.CSS_SELECTOR, "button[data-tooltip-id*='tt-c'][aria-label*='Quitter l']"), 
+            ]
+            for by, selector in button_selectors:
+                try:
+                    leave_button = WebDriverWait(self.driver, 5).until(
+                        EC.element_to_be_clickable((by, selector))
+                    )
+                    leave_button.click()
+                    print("\033[1;32mSuccessfully clicked 'Quitter l'appel' (End Call) button!\033[0m")
+                    print(f"Selector {i} used.")
+                    return True
+                except:
+                    continue  # Try the next selector if the current one fails
+
+            print("\033[1;31mError: Couldn't find 'Quitter l'appel' button. Meeting may have ended or UI changed.\033[0m")
+            return False
+
+        except Exception as e:
+            print(f"\033[1;31mException while trying to leave the meeting: {e}\033[0m")
+            return False
+
 

@@ -13,6 +13,7 @@ def main():
         return 
     bot = GoogleMeetBot(driver, MEET_LINK)
     bot.join_meeting()
+    bot.leave_meeting()
 
 if __name__ == "__main__":
     main()
