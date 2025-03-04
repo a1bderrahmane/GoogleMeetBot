@@ -15,14 +15,15 @@ This project automates joining a Google Meet session using Selenium and plays an
 - **Google Chrome** (compatible with [ChromeDriver](https://chromedriver.chromium.org/))
 - **FFmpeg:**  
   Download and install [FFmpeg](https://ffmpeg.org/download.html). Make sure to add the FFmpeg executable directory to your system's environment variables (PATH) so that the `ffplay` command is available system-wide.
-
+- **Virtual Audio Cable:**  
+  Download and install [Virtual Audio Cable](https://vac.muzychenko.net/en/). This software is used to route the audio playback directly to a virtual line, ensuring that the audio is transmitted clearly during the Google Meet session. Configure the Virtual Audio Cable to create a virtual line and set it as the default playback device.
 ## Setup
 
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/yourproject.git
-   cd yourproject
+   git clone https://github.com/a1bderrahmane/GoogleMeetBot.git
+   cd GoogleMeetBot
 
 Create a virtual environment:
 ```bash

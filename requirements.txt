@@ -24,4 +24,4 @@ typing_extensions==4.12.2
 urllib3==2.2.2
 wsproto==1.2.0
 selenium==4.0.0
-mutagen==1.47.0
+pydub==0.25.1
