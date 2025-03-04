@@ -1,4 +1,4 @@
-# Google Meet Bot with Audio Playback
+# Google Meet Bot 
 
 This project automates joining a Google Meet session using Selenium and plays an audio file upon successful meeting entry. It also handles Google authentication and automates basic meeting interaction.
 
